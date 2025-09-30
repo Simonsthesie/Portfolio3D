@@ -256,6 +256,69 @@ input {
   width: 2rem;
 }
 
+/* Styles pour les panneaux d'information */
+.info-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.info-panel {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-radius: 15px;
+  padding: 2rem;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 2px solid #3498db;
+  position: relative;
+}
+
+.info-title {
+  color: #ecf0f1;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.info-content {
+  color: #bdc3c7;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.info-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.info-close:hover {
+  background: #c0392b;
+}
+
 
 
 

@@ -7,6 +7,7 @@ I'm preparing a ThreeJS tutorial for creating video games.
 
 export default class Home {
   display = true
+  onStartCb = null
 
   constructor() {
     const home = createElement('div', 'container')
@@ -15,7 +16,7 @@ export default class Home {
     const pic = createElement('img', 'tech', './image/tech.png')
     const desc = createElement('div', 'desc', text)
     const button1 = createElement('div', 'button start', 'START', () => {
-      this.onStartCb()
+      if (this.onStartCb) this.onStartCb()
     })
     const inputs = createElement('div', 'config')
     this.drawInputs(inputs)

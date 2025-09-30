@@ -167,7 +167,7 @@ export function probaSeed(value) {
 }
 
 export function getRubisValue(mesh, value) {
-  return value ? value : mesh.isRootName('rubisB') ? 10 : 1
+  return value ? value : (mesh.name && mesh.name.includes('rubisB')) ? 10 : 1
 }
 
 export function createElement(tag, className, value, onclick) {

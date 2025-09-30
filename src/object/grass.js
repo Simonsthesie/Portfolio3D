@@ -16,7 +16,7 @@ export default class Grass extends Mesh {
   }
 
   initVisual(mesh) {
-    const isPlant = mesh.isRootName('plant')
+    const isPlant = mesh.name && mesh.name.includes('plant')
     replaceMaterial(mesh, isPlant ? materialPlant : materialGrass)
     this.copy(mesh)
     this.children[0].visible = false

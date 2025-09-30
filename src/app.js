@@ -9,6 +9,7 @@ import Block from './object/block'
 import Box from './object/box'
 import Rubis from './object/rubis'
 import Heart from './object/heart'
+import InfoPanel from './object/infoPanel'
 import Area from './effect/area'
 import Focus from './effect/focus'
 import Graphic from './engine/graphic'
@@ -25,6 +26,7 @@ const ast = await loadAssets()
 const home = new Home()
 
 async function main() {
+  console.log("=== DÉBUT DE MAIN ===")
   const scene = new Scene()
 
   const rubies = ast.meshesRubis.map((m) => new Rubis(m))
@@ -34,6 +36,74 @@ async function main() {
   const areas = ast.meshesArea.map((m) => new Area(m))
   const grasses = ast.meshesGrass.map((m) => new Grass(m))
   const player = new Player(clone(ast.meshPlayer), ast.spawn, physic)
+  console.log("Joueur créé")
+  
+  // Créer les panneaux d'information du portfolio près de la position actuelle du joueur
+  let infoPanels = []
+  try {
+    console.log("Création des panneaux...")
+    // Vérifier si les panneaux existent déjà
+    if (InfoPanel.panels.length === 0) {
+      infoPanels = [
+      new InfoPanel(
+        { x: 24, y: 1, z: 3 }, 
+        "Qui suis-je ?", 
+        `Bonjour ! Je suis [Votre Nom], développeur passionné par la création d'expériences interactives.
+
+Compétences principales :
+• Développement Web (JavaScript, React, Node.js)
+• Développement de jeux (Three.js, WebGL)
+• Design et UX/UI
+• Animation et effets visuels
+
+J'aime créer des projets innovants qui combinent technologie et créativité.`,
+        { color: 0x0000ff } // Bleu pur
+      ),
+      new InfoPanel(
+        { x: 18, y: 1, z: 3 }, 
+        "Mes Projets", 
+        `Voici quelques-uns de mes projets récents :
+
+🎮 Jeu 3D Interactif
+• Développement d'un jeu 3D avec Three.js
+• Système de physique avec Rapier
+• Interface utilisateur responsive
+
+🌐 Application Web
+• Frontend en React
+• Backend en Node.js
+• Base de données MongoDB
+
+📱 Application Mobile
+• React Native
+• Interface native
+• Intégration API`,
+        { color: 0x00ff00 } // Vert pur
+      ),
+      new InfoPanel(
+        { x: 21, y: 1, z: -5 }, 
+        "Contact", 
+        `N'hésitez pas à me contacter !
+
+📧 Email : votre.email@example.com
+💼 LinkedIn : /in/votre-profil
+🐙 GitHub : /votre-username
+📱 Téléphone : +33 6 XX XX XX XX
+
+Je suis toujours ouvert à de nouvelles opportunités et collaborations intéressantes.`,
+        { color: 0xff0000 } // Rouge pur
+      )
+      ]
+      console.log("Panneaux créés avec succès:", infoPanels.length)
+    } else {
+      console.log("Panneaux déjà existants, réutilisation")
+      infoPanels = InfoPanel.panels
+    }
+  } catch (error) {
+    console.error("Erreur lors de la création des panneaux:", error)
+  }
+  console.log("Panneaux finaux:", infoPanels.length)
+  console.log("Panneaux dans InfoPanel.panels:", InfoPanel.panels.length)
   const mobs1 = ast.spawnsMobA.map((m) => new Mob1(clone(ast.meshMob1), m, physic))
   const mobs2 = ast.spawnsMobB.map((m) => new Mob2(clone(ast.meshMob2), m, physic))
   const world = new World(ast.meshesSolid, ast.meshesCollider, physic)
@@ -50,6 +120,7 @@ async function main() {
   scene.add(...bloks)
   scene.add(...boxes)
   scene.add(...grasses)
+  scene.add(...infoPanels)
   scene.add(...mobs)
   scene.add(player)
   scene.add(world)
@@ -67,9 +138,20 @@ async function main() {
     world.update(dt)
     focus.update(dt, player, camera)
     camera.update(player)
+    InfoPanel.update(player)
     rules.update(dt)
     light.update(player)
     ui.update(player)
+    
+    // Debug position du joueur et des panneaux
+    if (Math.floor(Date.now() / 1000) % 5 === 0) {
+      console.log(`Joueur position: (${player.position.x.toFixed(1)}, ${player.position.y.toFixed(1)}, ${player.position.z.toFixed(1)})`)
+      console.log(`Nombre de panneaux: ${InfoPanel.panels.length}`)
+      for (let i = 0; i < InfoPanel.panels.length; i++) {
+        const panel = InfoPanel.panels[i]
+        console.log(`Panneau ${i}: (${panel.position.x.toFixed(1)}, ${panel.position.y.toFixed(1)}, ${panel.position.z.toFixed(1)}) - Visible: ${panel.visible}`)
+      }
+    }
   })
 
   Grass.onCut((pos) => {
@@ -104,6 +186,7 @@ async function main() {
   })
 
   rules.onGameover(() => {
+    // Ne pas supprimer les panneaux lors du game over
     const objects3D = {player, mobs, bloks, boxes, grasses, hearts, rubies, focus, world }
     cleanGame(objects3D, graphic, ui)
     main()
