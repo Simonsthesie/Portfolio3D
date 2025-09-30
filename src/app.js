@@ -45,10 +45,10 @@ async function main() {
     // Vérifier si les panneaux existent déjà
     if (InfoPanel.panels.length === 0) {
       infoPanels = [
-      new InfoPanel(
-        { x: 24, y: 1, z: 3 }, 
-        "Qui suis-je ?", 
-        `Bonjour ! Je suis [Votre Nom], développeur passionné par la création d'expériences interactives.
+    new InfoPanel(
+      { x: 19.6, y: 0.5, z: -1.6 }, 
+      "Qui suis-je ?", 
+      `Bonjour ! Je suis [Votre Nom], développeur passionné par la création d'expériences interactives.
 
 Compétences principales :
 • Développement Web (JavaScript, React, Node.js)
@@ -57,12 +57,13 @@ Compétences principales :
 • Animation et effets visuels
 
 J'aime créer des projets innovants qui combinent technologie et créativité.`,
-        { color: 0x0000ff } // Bleu pur
-      ),
-      new InfoPanel(
-        { x: 18, y: 1, z: 3 }, 
-        "Mes Projets", 
-        `Voici quelques-uns de mes projets récents :
+      { color: 0x4a90e2 }, // Bleu professionnel
+      physic // Passer le système de physique
+    ),
+    new InfoPanel(
+      { x: 25.7, y: 0.5, z: -1.6 }, 
+      "Mes Projets", 
+      `Voici quelques-uns de mes projets récents :
 
 🎮 Jeu 3D Interactif
 • Développement d'un jeu 3D avec Three.js
@@ -78,12 +79,13 @@ J'aime créer des projets innovants qui combinent technologie et créativité.`,
 • React Native
 • Interface native
 • Intégration API`,
-        { color: 0x00ff00 } // Vert pur
-      ),
-      new InfoPanel(
-        { x: 21, y: 1, z: -5 }, 
-        "Contact", 
-        `N'hésitez pas à me contacter !
+      { color: 0x27ae60 }, // Vert professionnel
+      physic // Passer le système de physique
+    ),
+    new InfoPanel(
+      { x: 30.5, y: 0.5, z: 2.1 }, 
+      "Contact", 
+      `N'hésitez pas à me contacter !
 
 📧 Email : votre.email@example.com
 💼 LinkedIn : /in/votre-profil
@@ -91,7 +93,8 @@ J'aime créer des projets innovants qui combinent technologie et créativité.`,
 📱 Téléphone : +33 6 XX XX XX XX
 
 Je suis toujours ouvert à de nouvelles opportunités et collaborations intéressantes.`,
-        { color: 0xff0000 } // Rouge pur
+      { color: 0xe74c3c }, // Rouge professionnel
+      physic // Passer le système de physique
       )
       ]
       console.log("Panneaux créés avec succès:", infoPanels.length)
@@ -143,14 +146,11 @@ Je suis toujours ouvert à de nouvelles opportunités et collaborations intéres
     light.update(player)
     ui.update(player)
     
-    // Debug position du joueur et des panneaux
+    // Debug position du joueur toutes les 5 secondes
     if (Math.floor(Date.now() / 1000) % 5 === 0) {
-      console.log(`Joueur position: (${player.position.x.toFixed(1)}, ${player.position.y.toFixed(1)}, ${player.position.z.toFixed(1)})`)
-      console.log(`Nombre de panneaux: ${InfoPanel.panels.length}`)
-      for (let i = 0; i < InfoPanel.panels.length; i++) {
-        const panel = InfoPanel.panels[i]
-        console.log(`Panneau ${i}: (${panel.position.x.toFixed(1)}, ${panel.position.y.toFixed(1)}, ${panel.position.z.toFixed(1)}) - Visible: ${panel.visible}`)
-      }
+      console.log(`🎮 JOUEUR POSITION: x=${player.position.x.toFixed(1)}, y=${player.position.y.toFixed(1)}, z=${player.position.z.toFixed(1)}`)
+      console.log(`📍 Pour positionner un panneau, utilisez ces coordonnées:`)
+      console.log(`   new InfoPanel({ x: ${player.position.x.toFixed(1)}, y: ${player.position.y.toFixed(1)}, z: ${player.position.z.toFixed(1)} }, "Titre", "Contenu")`)
     }
   })
 

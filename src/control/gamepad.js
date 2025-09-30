@@ -19,7 +19,8 @@ export const keys = {
   d: 'right',
   l: 'attack',
   m: 'jump',
-  shift: 'lock'
+  shift: 'lock',
+  ' ': 'interact'
 }
 
 export class Ctrl {
@@ -29,6 +30,7 @@ export class Ctrl {
   lock = false
   attack = false
   jump = false
+  interact = false
   attackLoaded = false
   attackTurbo = false
 
@@ -59,6 +61,14 @@ export class Ctrl {
     this.updateAttackLoaded(dt)
     this.updateAttackTurbo(dt)
     this.updateAngle()
+    this.updateInteract()
+  }
+
+  updateInteract() {
+    this.interact = this.pressed.interact
+    if (this.interact) {
+      console.log("interact = true dans compute")
+    }
   }
   updateFocus() {
     this.lock = !!this.pressed.lock
@@ -151,7 +161,21 @@ export class Ctrl {
   }
 
   keydown(e) {
+    console.log("Touche pressée:", e.key, "Code:", e.code)
     this.clearKeys()
+    
+    // Gestion spéciale pour la touche Espace
+    if (e.key === ' ' || e.code === 'Space') {
+      console.log("Espace détecté dans keydown!")
+      if (!this.previousPressed.interact) {
+        this.pressed.interact = true
+        console.log("pressed.interact défini à true")
+      }
+      this.previousPressed.interact = true
+      e.preventDefault()
+      return
+    }
+    
     if (eventOnly[keys[e.key.toLowerCase()]]) {
       if (!this.previousPressed[keys[e.key.toLowerCase()]]) {
         this.pressed[keys[e.key.toLowerCase()]] = true

@@ -61,6 +61,7 @@ export default class Player extends Entity {
   constructor(mesh, origin, physic) {
     super(mesh, origin, physic)
     this.ctrl = new Ctrl(this)
+    this.lastInteractPressed = false
     this.initLight()
   }
 
@@ -90,6 +91,13 @@ export default class Player extends Entity {
     this.updateGround(areas)
     this.updateFocus(mobs)
 
+    // Gérer l'interaction avec les panneaux (une seule fois par pression)
+    if (this.ctrl.interact && !this.lastInteractPressed) {
+      console.log("Espace détecté ! Tentative d'interaction avec panneau...")
+      this.handlePanelInteraction()
+    }
+    this.lastInteractPressed = this.ctrl.interact
+
     if (this.isPushing) {
       this.updatePropsPush(dt)
       this.updateAnimPush()
@@ -107,6 +115,17 @@ export default class Player extends Entity {
       this.updateAnimIdle()
     }
     this.contact = null
+  }
+
+  handlePanelInteraction() {
+    console.log("handlePanelInteraction appelé")
+    // Importer InfoPanel dynamiquement pour éviter les dépendances circulaires
+    import('../object/infoPanel.js').then(({ default: InfoPanel }) => {
+      console.log("InfoPanel importé, appel de handleSpaceKey...")
+      InfoPanel.handleSpaceKey(this)
+    }).catch(error => {
+      console.error("Erreur lors de l'import d'InfoPanel:", error)
+    })
   }
 
   cancelPush() {
