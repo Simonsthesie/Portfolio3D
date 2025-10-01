@@ -21,12 +21,16 @@ export default class Home {
     const button1 = createElement('div', 'button start', 'START', () => {
       if (this.onStartCb) this.onStartCb()
     })
+    const button2 = createElement('div', 'button cv', 'Voir mon CV', () => {
+      window.open('./CV_Loro.pdf', '_blank')
+    })
     const commandsList = createElement('div', 'commands-list')
     this.drawCommands(commandsList)
     menu.appendChild(title)
     menu.appendChild(desc)
     menu.appendChild(commandsList)
     home.appendChild(button1)
+    home.appendChild(button2)
     home.appendChild(menu)
     document.body.appendChild(home)
     this.home = home
