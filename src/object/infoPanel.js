@@ -7,6 +7,7 @@ export default class InfoPanel extends Mesh {
   static panels = []
   static activePanel = null
   static ui = null
+  static interactionIndicator = null
 
   constructor(position, title, content, options = {}, physic = null) {
     super()
@@ -36,12 +37,14 @@ export default class InfoPanel extends Mesh {
   }
 
   createDefaultPanelWithText() {
-    // Créer le panneau de base avec cadre noir
-    const geometry = new BoxGeometry(3, 4, 0.2)
+    // Créer le panneau de base avec effet bois cartoon (petit)
+    const geometry = new BoxGeometry(1.8, 1.8, 0.15)
+    
+    // Créer une texture de bois cartoon
+    const woodTexture = this.createCartoonWoodTexture()
     const material = new THREE.MeshBasicMaterial({ 
-      color: 0x000000, // Noir pur
-      transparent: false,
-      opacity: 1.0
+      map: woodTexture,
+      transparent: false
     })
     
     this.geometry = geometry
@@ -54,7 +57,81 @@ export default class InfoPanel extends Mesh {
     this.addTextToPanel()
   }
 
-  // Méthodes de texture bois supprimées - utilisation de cadres noirs simples
+  createCartoonWoodTexture() {
+    // Créer un canvas pour la texture de bois cartoon
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.width = 256
+    canvas.height = 256
+
+    // Couleur de base du bois (marron chaud)
+    const baseColor = '#8B5A2B'
+    const darkColor = '#654321'
+    const lightColor = '#A0702B'
+
+    // Remplir le fond
+    ctx.fillStyle = baseColor
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    // Ajouter des lignes de bois horizontales (grain du bois)
+    for (let i = 0; i < 20; i++) {
+      const y = Math.random() * canvas.height
+      const thickness = Math.random() * 3 + 1
+      const color = Math.random() > 0.5 ? darkColor : lightColor
+      
+      ctx.strokeStyle = color
+      ctx.lineWidth = thickness
+      ctx.globalAlpha = 0.3 + Math.random() * 0.3
+      
+      ctx.beginPath()
+      ctx.moveTo(0, y)
+      
+      // Créer des ondulations pour un effet naturel
+      for (let x = 0; x < canvas.width; x += 10) {
+        const offset = Math.sin(x * 0.1 + i) * 2
+        ctx.lineTo(x, y + offset)
+      }
+      ctx.lineTo(canvas.width, y)
+      ctx.stroke()
+    }
+
+    // Ajouter des noeuds de bois (cercles)
+    ctx.globalAlpha = 0.4
+    for (let i = 0; i < 5; i++) {
+      const x = Math.random() * canvas.width
+      const y = Math.random() * canvas.height
+      const radius = Math.random() * 8 + 3
+      
+      // Cercle extérieur
+      ctx.fillStyle = darkColor
+      ctx.beginPath()
+      ctx.arc(x, y, radius, 0, Math.PI * 2)
+      ctx.fill()
+      
+      // Cercle intérieur
+      ctx.fillStyle = baseColor
+      ctx.beginPath()
+      ctx.arc(x, y, radius * 0.5, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    // Ajouter un contour plus foncé pour l'effet cartoon
+    ctx.globalAlpha = 1
+    ctx.strokeStyle = '#3D2817'
+    ctx.lineWidth = 8
+    ctx.strokeRect(0, 0, canvas.width, canvas.height)
+
+    // Ajouter des ombres intérieures pour plus de profondeur
+    ctx.globalAlpha = 0.3
+    ctx.strokeStyle = darkColor
+    ctx.lineWidth = 6
+    ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8)
+
+    const texture = new THREE.CanvasTexture(canvas)
+    texture.needsUpdate = true
+    
+    return texture
+  }
 
   addTextToPanel() {
     // Créer un canvas pour le texte avec effet parchemin
@@ -96,8 +173,8 @@ export default class InfoPanel extends Mesh {
     const texture = new THREE.CanvasTexture(canvas)
     texture.needsUpdate = true
 
-    // Créer un plan pour afficher le texte
-    const textGeometry = new THREE.PlaneGeometry(2.5, 3.5)
+    // Créer un plan pour afficher le texte (plus petit que le cadre pour ne pas dépasser)
+    const textGeometry = new THREE.PlaneGeometry(1.4, 1.4)
     const textMaterial = new THREE.MeshBasicMaterial({ 
       map: texture,
       transparent: true,
@@ -233,8 +310,8 @@ export default class InfoPanel extends Mesh {
     
     const rigidBody = this.physic.createRigidBody(rigidBodyDesc)
     
-    // Créer un collider en forme de boîte pour le panneau (3x4x0.2)
-    const colliderDesc = Rapier.ColliderDesc.cuboid(1.5, 2, 0.1)
+    // Créer un collider en forme de boîte pour le panneau (1.8x1.8x0.15)
+    const colliderDesc = Rapier.ColliderDesc.cuboid(0.9, 0.9, 0.075)
     this.collider = this.physic.createCollider(colliderDesc, rigidBody)
     
     console.log(`Collider créé pour le panneau: ${this.title}`)
@@ -252,6 +329,7 @@ export default class InfoPanel extends Mesh {
     }
     
     InfoPanel.activePanel = this
+    InfoPanel.hideInteractionIndicator() // Masquer l'indication quand la popup s'ouvre
     this.createPopupUI()
   }
 
@@ -259,7 +337,32 @@ export default class InfoPanel extends Mesh {
     if (InfoPanel.activePanel === this) {
       InfoPanel.activePanel = null
       this.removePopupUI()
+      // L'indication sera réaffichée automatiquement par updateInteractionIndicator si le joueur est encore près d'un panneau
     }
+  }
+
+  formatContentWithLinks(text) {
+    // Convertir les URLs en liens cliquables
+    // Regex pour détecter les URLs (http, https, www)
+    const urlRegex = /(https?:\/\/[^\s]+)/g
+    
+    // Remplacer les URLs par des liens HTML
+    let formattedText = text.replace(urlRegex, (url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #3498db; text-decoration: underline;">${url}</a>`
+    })
+    
+    // Échapper les caractères HTML pour éviter les injections
+    formattedText = formattedText.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    
+    // Mais garder les balises <a> que nous avons créées
+    formattedText = formattedText.replace(/&lt;a href="/g, '<a href="')
+                                 .replace(/"&gt;/g, '">')
+                                 .replace(/&lt;\/a&gt;/g, '</a>')
+    
+    // Convertir les sauts de ligne en <br>
+    formattedText = formattedText.replace(/\n/g, '<br>')
+    
+    return formattedText
   }
 
   createPopupUI() {
@@ -309,7 +412,7 @@ export default class InfoPanel extends Mesh {
     
     const content = document.createElement('div')
     content.className = 'info-content'
-    content.textContent = this.content
+    content.innerHTML = this.formatContentWithLinks(this.content)
     content.style.cssText = `
       font-size: 16px;
       line-height: 1.6;
@@ -416,6 +519,57 @@ export default class InfoPanel extends Mesh {
     // Vérifier les interactions avec les panneaux
     for (const panel of InfoPanel.panels) {
       panel.checkPlayerDistance(player)
+    }
+    
+    // Gérer l'affichage de l'indication d'interaction
+    InfoPanel.updateInteractionIndicator(player)
+  }
+
+  static createInteractionIndicator() {
+    if (InfoPanel.interactionIndicator) return
+    
+    const indicator = document.createElement('div')
+    indicator.className = 'interaction-indicator'
+    indicator.textContent = 'Appuyez sur Espace'
+    indicator.style.display = 'none'
+    document.body.appendChild(indicator)
+    
+    InfoPanel.interactionIndicator = indicator
+    console.log("Indicateur d'interaction créé")
+  }
+
+  static showInteractionIndicator() {
+    if (!InfoPanel.interactionIndicator) {
+      InfoPanel.createInteractionIndicator()
+    }
+    InfoPanel.interactionIndicator.style.display = 'block'
+  }
+
+  static hideInteractionIndicator() {
+    if (InfoPanel.interactionIndicator) {
+      InfoPanel.interactionIndicator.style.display = 'none'
+    }
+  }
+
+  static updateInteractionIndicator(player) {
+    if (!player.active) {
+      InfoPanel.hideInteractionIndicator()
+      return
+    }
+
+    // Vérifier si le joueur est près d'un panneau
+    let isNearPanel = false
+    for (const panel of InfoPanel.panels) {
+      if (panel.isPlayerNear) {
+        isNearPanel = true
+        break
+      }
+    }
+
+    if (isNearPanel && !InfoPanel.activePanel) {
+      InfoPanel.showInteractionIndicator()
+    } else {
+      InfoPanel.hideInteractionIndicator()
     }
   }
 

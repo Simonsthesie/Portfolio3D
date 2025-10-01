@@ -45,57 +45,51 @@ async function main() {
     // Vérifier si les panneaux existent déjà
     if (InfoPanel.panels.length === 0) {
       infoPanels = [
-    new InfoPanel(
-      { x: 19.6, y: 0.5, z: -1.6 }, 
-      "Qui suis-je ?", 
-      `Bonjour ! Je suis [Votre Nom], développeur passionné par la création d'expériences interactives.
+        new InfoPanel(
+          { x: 25.7, y: 1.5, z: -1.6 }, 
+          "Qui suis-je ?", 
+          `Je m'appelle Simon, ancien chef cuisinier passionné de nouvelles technologies, je me spécialise dans l'intégration de l'IA dans les applications tout en explorant le mobile, le jeu vidéo et bien d'autres domaines. Curieux et polyvalent, je m'adapte rapidement aux nouvelles technologies et aime relever de nouveaux défis.`,
+          { color: 0x4a90e2 }, // Bleu professionnel
+          physic
+        ),
+        new InfoPanel(
+          { x: 31.1, y: 1.5, z: -1.6 }, 
+          "Mes Projets", 
+          `🌿 WildWatch – Suivi de la nature
+Mobile (Expo) + IA (reconnaissance d'images)
+Repères sur carte avec identification automatique
 
-Compétences principales :
-• Développement Web (JavaScript, React, Node.js)
-• Développement de jeux (Three.js, WebGL)
-• Design et UX/UI
-• Animation et effets visuels
+🍽️ Caleat – Gestion alimentaire
+Expo + IA (vision) : Analyse nutritionnelle par photo
 
-J'aime créer des projets innovants qui combinent technologie et créativité.`,
-      { color: 0x4a90e2 }, // Bleu professionnel
-      physic // Passer le système de physique
-    ),
-    new InfoPanel(
-      { x: 25.7, y: 0.5, z: -1.6 }, 
-      "Mes Projets", 
-      `Voici quelques-uns de mes projets récents :
+📋 Mindsphere – Tâches intelligentes
+React + Expo + IA vocale : Planification optimisée
 
-🎮 Jeu 3D Interactif
-• Développement d'un jeu 3D avec Three.js
-• Système de physique avec Rapier
-• Interface utilisateur responsive
+🧹 CleanThis – Plateforme d'entretien
+PHP/Symfony : Mise en relation agents/clients
 
-🌐 Application Web
-• Frontend en React
-• Backend en Node.js
-• Base de données MongoDB
+🏃 Pruv – Défis sportifs
+React Native : Réseau social de défis
 
-📱 Application Mobile
-• React Native
-• Interface native
-• Intégration API`,
-      { color: 0x27ae60 }, // Vert professionnel
-      physic // Passer le système de physique
-    ),
-    new InfoPanel(
-      { x: 30.5, y: 0.5, z: 2.1 }, 
-      "Contact", 
-      `N'hésitez pas à me contacter !
+🚗 TitineLove – Simulation drague de voitures
+JavaScript + IA : Dialogues adaptatifs`,
+          { color: 0x27ae60 }, // Vert professionnel
+          physic
+        ),
+        new InfoPanel(
+          { x: 28.4, y: 1.5, z: -0.2 }, 
+          "Contact", 
+          `N'hésitez pas à me contacter !
 
-📧 Email : votre.email@example.com
-💼 LinkedIn : /in/votre-profil
-🐙 GitHub : /votre-username
-📱 Téléphone : +33 6 XX XX XX XX
+📧 Email : loro-simon@live.fr
+💼 LinkedIn : https://www.linkedin.com/in/simon-loro/
+🐙 GitHub : https://github.com/Simonsthesie
+📱 Téléphone : 06 61 01 72 49
 
 Je suis toujours ouvert à de nouvelles opportunités et collaborations intéressantes.`,
-      { color: 0xe74c3c }, // Rouge professionnel
-      physic // Passer le système de physique
-      )
+          { color: 0xe74c3c }, // Rouge professionnel
+          physic
+        )
       ]
       console.log("Panneaux créés avec succès:", infoPanels.length)
     } else {
