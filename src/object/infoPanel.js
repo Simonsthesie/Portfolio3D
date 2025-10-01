@@ -454,6 +454,38 @@ export default class InfoPanel extends Mesh {
 
     panel.appendChild(title)
     panel.appendChild(content)
+    
+    // Ajouter le bouton CV uniquement pour le panneau "Contact"
+    if (this.title === "Contact") {
+      const cvBtn = document.createElement('button')
+      cvBtn.textContent = '📄 Voir mon CV'
+      cvBtn.style.cssText = `
+        display: block;
+        margin: 20px auto 0;
+        padding: 12px 24px;
+        background: #2ecc71;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+      `
+      cvBtn.addEventListener('mouseenter', () => {
+        cvBtn.style.background = '#27ae60'
+      })
+      cvBtn.addEventListener('mouseleave', () => {
+        cvBtn.style.background = '#2ecc71'
+      })
+      cvBtn.addEventListener('click', (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        window.open('./CV_Loro.pdf', '_blank')
+      })
+      panel.appendChild(cvBtn)
+    }
+    
     panel.appendChild(closeBtn)
     overlay.appendChild(panel)
     
